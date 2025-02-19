@@ -1,4 +1,3 @@
-
 import re
 import json
 import scrapy
@@ -6,6 +5,15 @@ from urllib.parse import urlencode
 
 class IndeedJobSpider(scrapy.Spider):
     name = "indeed_jobs"
+    
+    custom_settings = {
+        'HEADERS': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'en-US,en;q=0.5',
+            'Accept-Encoding': 'gzip, deflate, br',
+        }
+    }
 
     def get_indeed_search_url(self, keyword, location, offset=0):
         parameters = {"q": keyword, "l": location, "filter": 0, "start": offset}
@@ -18,7 +26,16 @@ class IndeedJobSpider(scrapy.Spider):
         for keyword in keyword_list:
             for location in location_list:
                 indeed_jobs_url = self.get_indeed_search_url(keyword, location)
-                yield scrapy.Request(url=indeed_jobs_url, callback=self.parse_search_results, meta={'keyword': keyword, 'location': location, 'offset': 0})
+                yield scrapy.Request(
+                    url=indeed_jobs_url, 
+                    callback=self.parse_search_results,
+                    headers=self.custom_settings['HEADERS'],
+                    meta={
+                        'keyword': keyword, 
+                        'location': location, 
+                        'offset': 0
+                    }
+                )
 
     def parse_search_results(self, response):
         location = response.meta['location']

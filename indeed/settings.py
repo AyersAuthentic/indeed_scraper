@@ -16,6 +16,9 @@ ROBOTSTXT_OBEY = False
 ## ScrapeOps API Key
 SCRAPEOPS_API_KEY = os.getenv('SCRAPEOPS_API_KEY')
 
+## ScrapeOps Coutnry Code
+SCRAPEOPS_PROXY_SETTINGS = {'country': 'us'}
+
 ## Enable ScrapeOps Proxy
 SCRAPEOPS_PROXY_ENABLED = True
 
@@ -26,14 +29,14 @@ EXTENSIONS = {
 
 
 DOWNLOADER_MIDDLEWARES = {
-
-    ## ScrapeOps Monitor
     'scrapeops_scrapy.middleware.retry.RetryMiddleware': 550,
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,
-    
-    ## Proxy Middleware
-    'indeed.middlewares.ScrapeOpsProxyMiddleware': 725,
+    'scrapeops_scrapy_proxy_sdk.scrapeops_scrapy_proxy_sdk.ScrapeOpsScrapyProxySdk': 725,
 }
 
-# Max Concurrency On ScrapeOps Proxy Free Plan is 1 thread
+
 CONCURRENT_REQUESTS = 1
+
+# Add these settings
+DOWNLOAD_DELAY = 2  # 2 seconds delay between requests
+RANDOMIZE_DOWNLOAD_DELAY = True
